@@ -1,2 +1,70 @@
 # deepest-walk
-The Deepest Object Walking Library: Traverse and Modify Array, Objects, Maps, Numbers, Sets, Strings, and Substrings.
+The Deepest JSON Object Walking Library: Traverse and Modify Arrays, Objects, Numbers, Strings, and Substrings.
+
+# why is it the deepest?
+There are many great object walking libraries.  However, I'm not aware of any other library that will traverse substrings within the strings found in a JSON Object.
+
+# install
+```bash
+npm install deepest-walk
+```
+
+# usage
+## basic usage
+```javascript
+const walk = require("deepest-walk");
+
+const data = [
+  { name: 'George Washington' },
+  { name: 'John Adams' }
+];
+const callback = ({ data }) => console.log(data);
+walk({ data, callback });
+```
+This will log:
+```
+name
+George Washington
+name
+John Adams
+```
+
+## breaking on words
+Set split_strings_on to " " to break on words
+```javascript
+const walk = require("deepest-walk");
+
+const data = [
+  { name: 'George Washington' },
+  { name: 'John Adams' }
+];
+const callback = ({ data }) => console.log(data);
+walk({ data, callback, split_strings_on: " " });
+```
+This will log:
+```
+name
+George
+Washington
+name
+John
+Adams
+```
+
+## modifying words
+The following capitalizes all the strings
+```javascript
+const walk = require("deepest-walk");
+
+const data = [
+  { name: 'George Washington' },
+  { name: 'John Adams' }
+];
+const callback = ({ data: str, mod }) => {
+
+  mod(str.toUpperCase());
+};
+
+walk({ data, callback });
+```
+

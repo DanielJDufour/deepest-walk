@@ -1,0 +1,41 @@
+{
+  "name": "deepest-walk",
+  "version": "0.0.0",
+  "description": "The Deepest Object Walking Library: Traverse and Modify Array, Objects, Maps, Numbers, Sets, Strings, and Substrings.",
+  "main": "deepest-walk.js",
+  "files": [
+    "deepest-walk.js"
+  ],
+  "scripts": {
+    "format": "npx prettier --print-width=120 --write *.js",
+    "test": "node test.deepest-walk.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanielJDufour/deepest-walk.git"
+  },
+  "keywords": [
+    "array",
+    "json",
+    "object",
+    "map",
+    "set",
+    "string",
+    "substrings",
+    "traverse",
+    "walk"
+  ],
+  "author": "Daniel J. Dufour",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/DanielJDufour/deepest-walk/issues"
+  },
+  "homepage": "https://github.com/DanielJDufour/deepest-walk#readme",
+  "dependencies": {
+    "advarr": "^0.2.0",
+    "replace-key": "^0.0.0"
+  },
+  "devDependencies": {
+    "flug": "^0.0.0"
+  }
+}
