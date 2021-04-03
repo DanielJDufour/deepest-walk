@@ -61,10 +61,15 @@ const data = [
   { name: 'John Adams' }
 ];
 const callback = ({ data: str, mod }) => {
-
   mod(str.toUpperCase());
 };
 
 walk({ data, callback });
 ```
-
+Data will be:
+```javascript
+[
+  { NAME: 'GEORGE WASHINGTON' },
+  { NAME: 'JOHN ADAMS' }
+];
+```
