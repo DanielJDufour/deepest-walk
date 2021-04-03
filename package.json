@@ -1,7 +1,7 @@
 {
   "name": "deepest-walk",
   "version": "0.0.0",
-  "description": "The Deepest Object Walking Library: Traverse and Modify Array, Objects, Maps, Numbers, Sets, Strings, and Substrings.",
+  "description": "The Deepest JSON Object Walking Library: Traverse and Modify Arrays, Objects, Numbers, Strings, and Substrings.",
   "main": "deepest-walk.js",
   "files": [
     "deepest-walk.js"
