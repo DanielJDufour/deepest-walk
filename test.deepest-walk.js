@@ -5,6 +5,7 @@ const rec = ({ data, debug, split_strings_on }) => {
   let output = [];
   const callback = ({ data }) => output.push(data);
   walk({ data, debug, callback, split_strings_on });
+  if (debug) console.log("output:", output);
   return output;
 };
 
@@ -51,7 +52,15 @@ test("walking array of objects", ({ eq }) => {
 
 test("walking words", ({ eq }) => {
   const data = { name: "United States of America" };
-  eq(rec({ data, debug: false, split_strings_on: " " }), ["name", "United", "States", "of", "America"]);
+  eq(rec({ data, debug: false, split_strings_on: " " }), [
+    "name",
+    "name",
+    "United States of America",
+    "United",
+    "States",
+    "of",
+    "America",
+  ]);
 });
 
 test("walking words with replace", ({ eq }) => {

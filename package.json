@@ -32,10 +32,10 @@
   },
   "homepage": "https://github.com/DanielJDufour/deepest-walk#readme",
   "dependencies": {
-    "advarr": "^0.2.0",
+    "advarr": "^0.4.0",
     "replace-key": "^0.0.0"
   },
   "devDependencies": {
-    "flug": "^0.0.0"
+    "flug": "*"
   }
 }

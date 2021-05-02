@@ -1,4 +1,4 @@
-const { map } = require("advarr");
+const { forEach, map } = require("advarr");
 const replaceKey = require("replace-key");
 
 // utility functions
@@ -17,9 +17,14 @@ function walk({
   split_strings_on = null, // alternative is " " if you want to split on words
   include_sep = false, // defaults to including separator in beginging if exists
   max_path_length: m = Infinity,
+  split_keys = undefined,
 }) {
   // saving args to pass down
   let args = arguments[0];
+
+  if (split_keys === undefined) {
+    split_keys = split_strings_on !== undefined;
+  }
 
   if (debug) console.log("starting walk with args", args);
   const hasPath = isAry(path) && path.length > 0;
@@ -35,19 +40,28 @@ function walk({
   if (isAry(data)) {
     data.forEach((item, i) => {
       if (isStr(item)) {
+        callback({
+          type: "array-item-string",
+          data: item,
+          mod: (new_item) => (data[i] = new_item),
+        });
         if (split_strings_on) {
           const subItems = split_str(item);
-          subItems.forEach((subItem, ii) => {
+          forEach(subItems, ({ it: subItem, index: ii, next, prev, first: isFirstSubstr, last: isLastSubstr }) => {
             callback({
+              type: "array-item-substring",
               data: subItem,
               mod: (newSubItem) => {
                 subItems[ii] = newSubItem;
                 data[i] = subItems.join(include_sep ? "" : split_strings_on);
               },
+              path: [ii, item, data, ...path],
+              next,
+              prev,
+              first: isFirstSubstr,
+              last: isLastSubstr,
             });
           });
-        } else {
-          callback({ data: item, mod: (new_item) => (data[i] = new_item) });
         }
       } else {
         walk({ ...args, data: item, path: [i, data, ...path].slice(0, m) });
@@ -55,46 +69,59 @@ function walk({
     });
   } else if (isObj(data)) {
     Object.keys(data).forEach((key) => {
-      if (split_strings_on) {
+      callback({
+        type: "object-key-string",
+        data: key,
+        mod: (new_key) => {
+          replaceKey({ obj: data, old_key: key, new_key });
+          key = new_key;
+        },
+      });
+
+      if (split_keys && split_strings_on) {
         const subKeys = split_str(key);
-        subKeys.forEach((subkey, i) => {
+        forEach(subKeys, ({ it: subkey, i, first, last, prev, next }) => {
           const mod = (newSubKey) => {
             subKeys[i] = newSubKey;
             const new_key = join_subs(subKeys);
             replaceKey({ obj: data, old_key: key, new_key });
             key = new_key;
           };
-          callback({ data: subkey, mod });
-        });
-      } else {
-        callback({
-          data: key,
-          mod: (new_key) => {
-            replaceKey({ obj: data, old_key: key, new_key });
-            key = new_key;
-          },
+          callback({
+            type: "object-key-substring",
+            data: subkey,
+            mod,
+            first,
+            last,
+            prev,
+            next,
+          });
         });
       }
       let value = data[key];
       if (debug) console.log("value:", value);
       if (isStr(value)) {
+        callback({
+          type: "object-value-string",
+          data: value,
+          mod: (newValue) => {
+            data[key] = newValue;
+            value = newValue;
+          },
+        });
         if (split_strings_on) {
           const subValues = split_str(value);
-          subValues.forEach((subvalue, i) => {
+          forEach(subValues, ({ it: subvalue, i }) => {
             const mod = (newSubValue) => {
               subValues[i] = newSubValue;
               data[key] = join_subs(subValues);
               subvalue = newSubValue;
             };
-            callback({ data: subvalue, mod });
-          });
-        } else {
-          callback({
-            data: value,
-            mod: (newValue) => {
-              data[key] = newValue;
-              value = newValue;
-            },
+            callback({
+              type: "object-value-substring",
+              data: subvalue,
+              mod,
+            });
           });
         }
       } else {
@@ -111,8 +138,13 @@ function walk({
         },
       });
     } else if (isArrayItem || isObjValue) {
+      let type;
+      if (data === undefined) type = "array-item-undefined";
+      else if (data === null) type = "array-item-null";
+      else if (typeof data === "number") type = "array-item-number";
       callback({
         data,
+        type,
         mod: (new_value) => {
           path[1][path[0]] = new_value;
           value = new_value;

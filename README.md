@@ -44,9 +44,13 @@ walk({ data, callback, split_strings_on: " " });
 This will log:
 ```
 name
+name
+George Washington
 George
 Washington
 name
+name
+John Adams
 John
 Adams
 ```
