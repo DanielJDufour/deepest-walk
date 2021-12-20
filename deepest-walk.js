@@ -18,6 +18,7 @@ function walk({
   include_sep = false, // defaults to including separator in beginging if exists
   max_path_length: m = Infinity,
   split_keys = undefined,
+  types,
 }) {
   // saving args to pass down
   let args = arguments[0];
@@ -49,19 +50,23 @@ function walk({
   };
 
   if (isAry(data)) {
-    callback({
-      type: "array",
-      data,
-      mod: mod_parent,
-    });
+    if (!types || types.includes("array")) {
+      callback({
+        type: "array",
+        data,
+        mod: mod_parent,
+      });
+    }
     data.forEach((item, i) => {
       if (isStr(item)) {
-        callback({
-          type: "array-item-string",
-          data: item,
-          mod: (new_item) => (data[i] = new_item),
-        });
-        if (split_strings_on) {
+        if (!types || types.includes("array-item-string")) {
+          callback({
+            type: "array-item-string",
+            data: item,
+            mod: (new_item) => (data[i] = new_item),
+          });
+        }
+        if (split_strings_on && (!types || types.includes("array-item-substring"))) {
           const subItems = split_str(item);
           forEach(subItems, ({ it: subItem, index: ii, next, prev, first: isFirstSubstr, last: isLastSubstr }) => {
             callback({
@@ -84,22 +89,26 @@ function walk({
       }
     });
   } else if (isObj(data)) {
-    callback({
-      type: "object",
-      data,
-      mod: mod_parent,
-    });
-    Object.keys(data).forEach((key) => {
+    if (!types || types.includes("object")) {
       callback({
-        type: "object-key-string",
-        data: key,
-        mod: (new_key) => {
-          replaceKey({ obj: data, old_key: key, new_key });
-          key = new_key;
-        },
+        type: "object",
+        data,
+        mod: mod_parent,
       });
+    }
+    Object.keys(data).forEach((key) => {
+      if (!types || types.includes("object-key-string")) {
+        callback({
+          type: "object-key-string",
+          data: key,
+          mod: (new_key) => {
+            replaceKey({ obj: data, old_key: key, new_key });
+            key = new_key;
+          },
+        });
+      }
 
-      if (split_keys && split_strings_on) {
+      if (split_keys && split_strings_on && (!types || types.includes("object-key-substring"))) {
         const subKeys = split_str(key);
         forEach(subKeys, ({ it: subkey, i, first, last, prev, next }) => {
           const mod = (newSubKey) => {
@@ -122,15 +131,17 @@ function walk({
       let value = data[key];
       if (debug) console.log("value:", value);
       if (isStr(value)) {
-        callback({
-          type: "object-value-string",
-          data: value,
-          mod: (newValue) => {
-            data[key] = newValue;
-            value = newValue;
-          },
-        });
-        if (split_strings_on) {
+        if (!types || types.includes("object-value-string")) {
+          callback({
+            type: "object-value-string",
+            data: value,
+            mod: (newValue) => {
+              data[key] = newValue;
+              value = newValue;
+            },
+          });
+        }
+        if (split_strings_on && (!types || types.includes("object-value-substring"))) {
           const subValues = split_str(value);
           forEach(subValues, ({ it: subvalue, i }) => {
             const mod = (newSubValue) => {
@@ -152,27 +163,32 @@ function walk({
     });
   } else if (data === undefined || data === null || typeof data === "number") {
     if (!hasPath) {
-      callback({
-        data,
-        type:
-          data === undefined ? "undefined" : data === null ? "null" : typeof data === "number" ? "number" : undefined,
-        mod: () => {
-          throw new Error("unable to mod");
-        },
-      });
+      const dataType =
+        data === undefined ? "undefined" : data === null ? "null" : typeof data === "number" ? "number" : undefined;
+      if (!types || types.includes(dataType)) {
+        callback({
+          data,
+          type: dataType,
+          mod: () => {
+            throw new Error("unable to mod");
+          },
+        });
+      }
     } else if (isArrayItem || isObjValue) {
       let type;
       if (data === undefined) type = "array-item-undefined";
       else if (data === null) type = "array-item-null";
       else if (typeof data === "number") type = "array-item-number";
-      callback({
-        data,
-        type,
-        mod: (new_value) => {
-          path[1][path[0]] = new_value;
-          value = new_value;
-        },
-      });
+      if (!types || types.includes(type)) {
+        callback({
+          data,
+          type,
+          mod: (new_value) => {
+            path[1][path[0]] = new_value;
+            value = new_value;
+          },
+        });
+      }
     }
   }
 }
