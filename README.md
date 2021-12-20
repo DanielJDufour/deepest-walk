@@ -9,6 +9,19 @@ There are many great object walking libraries.  However, I'm not aware of any ot
 npm install deepest-walk
 ```
 
+# types
+- array
+- object
+- array-item-string
+- array-item-substring
+- object-key-string
+- object-key-substring
+- object-value-string
+- object-value-substring
+- undefined
+- null
+- number
+
 # usage
 ## basic usage
 ```javascript
@@ -64,8 +77,10 @@ const data = [
   { name: 'George Washington' },
   { name: 'John Adams' }
 ];
-const callback = ({ data: str, mod }) => {
-  mod(str.toUpperCase());
+const callback = ({ data: str, mod, type }) => {
+  if (type.includes("string")) {
+    mod(str.toUpperCase());
+  }
 };
 
 walk({ data, callback });

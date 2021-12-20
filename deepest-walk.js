@@ -37,7 +37,23 @@ function walk({
 
   if (!hasPath && isStr(data)) throw new Error("you must pass in an object or an array to start");
 
+  const mod_parent = (value) => {
+    if (path.length === 0) throw new Error("[deepest-walk] unable to modify the starting data in place");
+    if (typeof path[0] === "number") {
+      // path[0] is an index in an array
+      path[1][path[0]] = value;
+    } else if (typeof path[0] === "string") {
+      // path[0] is a key in an object
+      path[1][path[0]] = value;
+    }
+  };
+
   if (isAry(data)) {
+    callback({
+      type: "array",
+      data,
+      mod: mod_parent,
+    });
     data.forEach((item, i) => {
       if (isStr(item)) {
         callback({
@@ -68,6 +84,11 @@ function walk({
       }
     });
   } else if (isObj(data)) {
+    callback({
+      type: "object",
+      data,
+      mod: mod_parent,
+    });
     Object.keys(data).forEach((key) => {
       callback({
         type: "object-key-string",
@@ -133,6 +154,8 @@ function walk({
     if (!hasPath) {
       callback({
         data,
+        type:
+          data === undefined ? "undefined" : data === null ? "null" : typeof data === "number" ? "number" : undefined,
         mod: () => {
           throw new Error("unable to mod");
         },

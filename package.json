@@ -33,6 +33,7 @@
   "homepage": "https://github.com/DanielJDufour/deepest-walk#readme",
   "dependencies": {
     "advarr": "^0.4.0",
+    "get-depth": "^0.0.3",
     "replace-key": "^0.0.0"
   },
   "devDependencies": {
