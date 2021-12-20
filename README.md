@@ -1,5 +1,7 @@
 # deepest-walk
-The Deepest JSON Object Walking Library: Traverse and Modify Arrays, Objects, Numbers, Strings, and Substrings.
+> The Deepest JSON Object Walking Library
+
+Traverse and Modify Arrays, Objects, Numbers, Strings, and Substrings.
 
 # why is it the deepest?
 There are many great object walking libraries.  However, I'm not aware of any other library that will traverse substrings within the strings found in a JSON Object.
@@ -32,13 +34,11 @@ const data = [
   { name: 'John Adams' }
 ];
 const callback = ({ data }) => console.log(data);
-walk({ data, callback });
+walk({ data, callback, types: ["object-value-string"] });
 ```
 This will log:
 ```
-name
 George Washington
-name
 John Adams
 ```
 
@@ -52,18 +52,12 @@ const data = [
   { name: 'John Adams' }
 ];
 const callback = ({ data }) => console.log(data);
-walk({ data, callback, split_strings_on: " " });
+walk({ data, callback, types: ["object-value-substring"], split_strings_on: " " });
 ```
 This will log:
 ```
-name
-name
-George Washington
 George
 Washington
-name
-name
-John Adams
 John
 Adams
 ```
@@ -77,9 +71,9 @@ const data = [
   { name: 'George Washington' },
   { name: 'John Adams' }
 ];
-const callback = ({ data: str, mod, type }) => {
-  if (type.includes("string")) {
-    mod(str.toUpperCase());
+const callback = ({ data, mod, type }) => {
+  if (typeof data === "string") {
+    mod(data.toUpperCase());
   }
 };
 
