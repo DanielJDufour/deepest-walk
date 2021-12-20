@@ -1,6 +1,6 @@
 {
   "name": "deepest-walk",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "The Deepest JSON Object Walking Library: Traverse and Modify Arrays, Objects, Numbers, Strings, and Substrings.",
   "main": "deepest-walk.js",
   "files": [
