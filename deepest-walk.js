@@ -158,7 +158,7 @@ function walk({
         }
       } else {
         // walk value
-        walk({ ...args, data: data[key], path: [...key, data, ...path].slice(0, m) });
+        walk({ ...args, data: data[key], path: [key, data, ...path].slice(0, m) });
       }
     });
   } else if (data === undefined || data === null || typeof data === "number") {
